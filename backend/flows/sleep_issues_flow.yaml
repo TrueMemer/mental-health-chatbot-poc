@@ -1,0 +1,96 @@
+id: sleep_issues_flow
+trigger_keywords:
+  - sleep
+  - insomnia
+  - can't sleep
+steps:
+  - id: start
+    engine: basic
+    bot: "I'm sorry to hear you're having trouble sleeping. How long have you been experiencing this?"
+    user_response_required: true
+    set_context:
+      isInFlow: true
+    ai_classification:
+      engine: ai
+      ai_prompt: "Classify the duration mentioned by the user as 'short-term' or 'long-term'. Only respond with the classification."
+    branches:
+      - condition:
+          engine: ai
+          expected_classifications:
+            - short-term
+        set_context:
+          sleepDuration: short-term
+        next_step_id: short_term_sleep_issues
+      - condition:
+          engine: ai
+          expected_classifications:
+            - long-term
+        set_context:
+          sleepDuration: long-term
+        next_step_id: long_term_sleep_issues
+      - condition:
+          default: true
+        next_step_id: general_sleep_advice
+
+  - id: short_term_sleep_issues
+    engine: basic
+    bot: "Short-term sleep issues are common. Has anything changed recently in your life that might be affecting your sleep?"
+    user_response_required: true
+    branches:
+      - condition:
+          engine: basic
+          expected_user_keywords:
+            - yes
+            - something
+        set_context:
+          hasRecentChanges: true
+        next_step_id: discuss_changes
+      - condition:
+          default: true
+        set_context:
+          hasRecentChanges: false
+        next_step_id: sleep_hygiene_tips
+
+  - id: discuss_changes
+    engine: ai
+    ai_prompt: "Provide empathetic feedback acknowledging the user's changes and suggest possible coping strategies."
+    user_response_required: false
+
+  - id: sleep_hygiene_tips
+    engine: basic
+    bot: "Maintaining a regular sleep schedule and creating a restful environment can help improve sleep quality."
+    user_response_required: false
+
+  - id: long_term_sleep_issues
+    engine: basic
+    bot: "Dealing with long-term sleep issues can be tough. Have you consulted a healthcare professional about this?"
+    user_response_required: true
+    branches:
+      - condition:
+          engine: basic
+          expected_user_keywords:
+            - yes
+            - I have
+        set_context:
+          hasConsulted: true
+        next_step_id: encourage_follow_up
+      - condition:
+          default: true
+        set_context:
+          hasConsulted: false
+        next_step_id: recommend_professional_help
+
+  - id: encourage_follow_up
+    engine: basic
+    bot: "That's good to hear. Regular follow-ups can help manage the issue effectively."
+    user_response_required: false
+
+  - id: recommend_professional_help
+    engine: basic
+    bot: "It might be beneficial to consult a healthcare provider to explore this further."
+    user_response_required: false
+
+  - id: general_sleep_advice
+    engine: basic
+    bot: "Ensuring a comfortable sleep environment and reducing screen time before bed can be helpful."
+    user_response_required: false

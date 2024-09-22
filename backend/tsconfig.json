@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": "./",
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+    },
+    "jest": {
+        "globals": {
+            "prisma": "prismaMock"
+        }
+    },
+    "exclude": [
+        "__tests__",
+        "__mocks__",
+        "scripts"
+    ],
+    "include": [
+        "./src/**/*",
+    ],
+}

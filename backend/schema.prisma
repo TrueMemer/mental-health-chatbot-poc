@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  googleId     String?       @unique
+  role          Role         @default(USER)
+  name         String?
+  conversations Conversation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id              Int          @id @default(autoincrement())
+  conversation     Conversation @relation(fields: [conversationId], references: [id])
+  conversationId   Int
+  sender           Sender
+  content          String
+  timestamp        DateTime     @default(now())
+}
+
+enum Sender {
+  USER
+  BOT
+}
+
+model Interaction {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  flowId         String
+  stepId         String
+  message        String
+  response       String?
+  context        Json?
+  timestamp      DateTime     @default(now())
+}

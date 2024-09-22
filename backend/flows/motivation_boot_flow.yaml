@@ -1,0 +1,30 @@
+id: motivation_boost_flow
+trigger_keywords:
+  - unmotivated
+  - can't focus
+  - lazy
+steps:
+  - id: start
+    engine: basic
+    bot: "It sounds like you're struggling with motivation. Would you like to explore some ways to regain your drive?"
+    user_response_required: true
+    branches:
+      - condition:
+          engine: basic
+          expected_user_keywords:
+            - yes
+            - sure
+        next_step_id: motivation_tips
+      - condition:
+          default: true
+        next_step_id: offer_support
+
+  - id: motivation_tips
+    engine: ai
+    ai_prompt: "Provide practical tips to boost motivation, such as setting small goals or taking breaks."
+    user_response_required: false
+
+  - id: offer_support
+    engine: basic
+    bot: "I'm here if you'd like to talk about it or need some encouragement."
+    user_response_required: false

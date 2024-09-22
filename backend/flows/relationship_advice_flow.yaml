@@ -1,0 +1,68 @@
+id: relationship_advice_flow
+trigger_keywords:
+  - relationship
+  - breakup
+  - partner
+steps:
+  - id: start
+    engine: basic
+    bot: "It seems you're dealing with relationship concerns. Would you like to talk about it?"
+    user_response_required: true
+    branches:
+      - condition:
+          engine: basic
+          expected_user_keywords:
+            - yes
+            - okay
+            - sure
+        next_step_id: discuss_relationship
+      - condition:
+          default: true
+        next_step_id: offer_listening_ear
+
+  - id: discuss_relationship
+    engine: ai
+    ai_prompt: "Invite the user to share more about their relationship issues in a compassionate way."
+    user_response_required: true
+    ai_classification:
+      engine: ai
+      ai_prompt: "Determine if the issue is about 'communication', 'trust', or 'other'. Only respond with the classification."
+    branches:
+      - condition:
+          engine: ai
+          expected_classifications:
+            - communication
+        next_step_id: communication_advice
+      - condition:
+          engine: ai
+          expected_classifications:
+            - trust
+        next_step_id: trust_advice
+      - condition:
+          engine: ai
+          expected_classifications:
+            - other
+        next_step_id: general_relationship_advice
+      - condition:
+          default: true
+        next_step_id: offer_listening_ear
+
+  - id: communication_advice
+    engine: ai
+    ai_prompt: "Provide advice on improving communication in relationships, emphasizing active listening and expressing feelings openly."
+    user_response_required: false
+
+  - id: trust_advice
+    engine: ai
+    ai_prompt: "Offer guidance on rebuilding trust, highlighting the importance of honesty and consistency."
+    user_response_required: false
+
+  - id: general_relationship_advice
+    engine: ai
+    ai_prompt: "Give general advice on handling relationship issues, suggesting seeking counseling or reflecting on personal needs."
+    user_response_required: false
+
+  - id: offer_listening_ear
+    engine: basic
+    bot: "I'm here if you decide you'd like to talk or need someone to listen."
+    user_response_required: false
