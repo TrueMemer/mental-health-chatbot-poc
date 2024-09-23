@@ -4,6 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: chatbot-backend
+    image: cutedespair/chatbot-backend:latest
     restart: unless-stopped
     env_file: backend/.env
     environment:
@@ -24,6 +25,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: chatbot-frontend
+    image: cutedespair/chatbot-frontend:latest
     env_file: frontend/.env
     restart: unless-stopped
     ports:
@@ -42,7 +44,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=chatbot_db
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     networks:
       - chatbot-network
 
@@ -51,7 +53,7 @@ services:
     container_name: chatbot-redis
     restart: unless-stopped
     volumes:
-      - redis-data:/data
+      - ./data/redis:/data
     networks:
       - chatbot-network
 
@@ -67,7 +69,3 @@ services:
 networks:
   chatbot-network:
     driver: bridge
-
-volumes:
-  db-data:
-  redis-data:
