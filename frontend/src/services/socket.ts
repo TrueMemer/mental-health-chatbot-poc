@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 
 let token = localStorage.getItem('token');
 
-const socket: Socket = io('http://localhost:5000', {
+const socket: Socket = io(import.meta.env.VITE_APP_WS_URL, {
   auth: {
     token: token ? `Bearer ${token}` : '',
   },
