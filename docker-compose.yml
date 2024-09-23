@@ -62,7 +62,7 @@ services:
     container_name: chatbot-adminer
     restart: unless-stopped
     ports:
-      - "8081:8080"
+      - "8082:8080"
     networks:
       - chatbot-network
 
