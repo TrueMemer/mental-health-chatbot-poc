@@ -6,7 +6,6 @@
                 <img src="https://via.placeholder.com/40" alt="Bot Avatar" class="h-10 w-10 rounded-full" />
                 <div>
                     <h2 class="text-lg font-semibold dark:text-gray-100">Chat with Mental Health Bot</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-100">Conversation ID: {{ conversationId }}</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -44,8 +43,9 @@
 
             <!-- Messages -->
             <div v-else>
-                <div v-for="message in messages" :key="message.id"
-                    :class="message.sender === 'USER' ? 'flex justify-end' : 'flex justify-start'">
+                <div v-for="message in messages" :key="message.id" :class="[
+                    message.sender === 'USER' ? 'flex justify-end' : 'flex justify-start',
+                ]">
                     <!-- Message bubble -->
                     <div :class="message.sender === 'USER'
                         ? 'bg-blue-500 text-white'
@@ -75,40 +75,32 @@
 </template>
 
 <script lang="ts">
-import EmojiPicker from 'vue-emoji-picker';
-import { defineComponent, ref, onMounted, watch, nextTick, computed } from 'vue';
+import { defineComponent, ref, onMounted, watch, computed } from 'vue';
 import socket from '@/services/socket';
-import { useChatStore } from '@/stores/chatStore';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { useToast } from 'vue-toastification';
 import TypingIndicator from './TypingIndicator.vue';
+import { useMessagesStore } from '@/stores/messagesStore';
 
 const userAvatar = 'https://via.placeholder.com/40?text=U';
 const botAvatar = 'https://via.placeholder.com/40?text=B';
 
 export default defineComponent({
-    name: 'Chat',
-    props: {
-        conversationId: {
-            type: Number,
-            required: true
-        }
-    },
+    name: 'ChatComponent',
     components: {
-        EmojiPicker,
         SettingsPanel,
         TypingIndicator
     },
-    setup(props) {
+    setup() {
         const showSettings = ref(false);
         const showEmojiPicker = ref(false);
-        const chatStore = useChatStore();
+        const messagesStore = useMessagesStore();
         const newMessage = ref('');
         const chatContainer = ref<HTMLElement | null>(null);
-        const isLoading = computed(() => chatStore.isLoading);
+        const isLoading = computed(() => messagesStore.isLoading);
         const isBotTyping = ref(false);
 
-        const messages = computed(() => chatStore.currentConversation?.messages || []);
+        const messages = computed(() => messagesStore?.messages || []);
 
         const toast = useToast();
 
@@ -121,48 +113,25 @@ export default defineComponent({
         };
 
         const refreshChat = () => {
-            chatStore.loadMessages(props.conversationId);
+            messagesStore.fetchMessages();
         };
 
         const openSettings = () => {
             showSettings.value = true;
         };
 
-        const loadMessages = async () => {
-            await chatStore.loadMessages(props.conversationId);
-            scrollToBottom();
-        };
-
         onMounted(async () => {
-            await loadMessages();
+            await refreshChat();
 
-            socket.emit('joinConversation', props.conversationId);
+            socket.emit('joinConversation');
         });
 
-        watch(
-            () => props.conversationId,
-            async (newVal, oldVal) => {
-                if (newVal !== oldVal) {
-
-                    socket.emit('leaveConversation', oldVal);
-
-
-                    await loadMessages();
-
-
-                    socket.emit('joinConversation', newVal);
-                }
-            }
-        );
-
         socket.on('newMessage', (message) => {
-            if (message.conversationId === props.conversationId) {
                 setTimeout(() => {
-                    chatStore.addMessageToConversation(message.conversationId, message);
+                    messagesStore.addMessage(message);
                     isBotTyping.value = false;
                     scrollToBottom();
                 }, 2000);
-            }
         });
 
         socket.on('disconnect', () => {
@@ -177,7 +146,7 @@ export default defineComponent({
         socket.io.on('reconnect', () => {
             toast.success('Reconnected to the server.');
 
-            socket.emit('joinConversation', props.conversationId);
+            socket.emit('joinConversation');
         });
 
 
@@ -191,9 +160,7 @@ export default defineComponent({
             const userMessage = newMessage.value
             newMessage.value = '';
             setTimeout(async () => {
-
                 socket.emit('sendMessage', {
-                    conversationId: props.conversationId,
                     content: userMessage,
                 });
             }, 500);

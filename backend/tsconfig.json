@@ -23,7 +23,8 @@
     "exclude": [
         "__tests__",
         "__mocks__",
-        "scripts"
+        "scripts",
+        "src/services/legacy"
     ],
     "include": [
         "./src/**/*",

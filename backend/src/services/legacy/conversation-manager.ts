@@ -70,7 +70,6 @@ class ConversationManager {
                 const response = await this.getNextFlowMessage(userId, userState, message);
                 logger.info(`Bot response to user ${userId}: "${response}"`);
 
-
                 await prisma.interaction.create({
                     data: {
                         userId: parseInt(userId) ?? 0,
@@ -156,10 +155,11 @@ class ConversationManager {
             }
 
             if (!step.user_response_required && !step.branches) {
-                await this.deleteUserState(userId);
+                if (!step.next_step_id) {
+                    await this.deleteUserState(userId);
+                    return botMessage;
+                }
             }
-
-            return botMessage;
         } else if (step.user_response_required) {
 
             return undefined;

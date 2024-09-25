@@ -1,0 +1,536 @@
+name: Mood Flow
+id: mood_flow
+classifier: basic
+utterances:
+  - stressed
+  - sad
+  - anxious
+  - happy
+  - angry
+  - excited
+  - overwhelmed
+  - depressed
+  - frustrated
+  - content
+  - worried
+  - joyful
+
+middleware:
+  before_flow:
+    - name: log_start
+      params:
+        message: 'Starting Mood Flow for user.'
+  before_step:
+    - name: authenticate_user
+      params:
+        role: 'user'
+    - name: log_step
+      params:
+        message: 'About to execute step.'
+  after_step:
+    - name: log_step_completion
+      params:
+        message: 'Step completed successfully.'
+
+steps:
+  - id: start
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a welcoming message asking the user to share what''s bothering them.'
+      - name: listen
+    next_step: continue
+
+  - id: continue
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: anxiety
+              utterances:
+                - anxiety
+                - anxious
+                - worried
+                - overwhelmed
+                - stressed
+              jump:
+                step_id: anxiety_flow
+
+            - name: sadness
+              utterances:
+                - feel sad
+                - sad
+                - depressed
+                - frustrated
+              jump:
+                step_id: sad_flow
+
+            - name: happiness
+              utterances:
+                - happy
+                - joyful
+                - excited
+                - content
+              jump:
+                step_id: happy_flow
+
+            - name: anger
+              utterances:
+                - angry
+                - frustrated
+                - irritated
+                - upset
+              jump:
+                step_id: anger_flow
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: start_fallback
+
+  - id: start_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a fallback message indicating that the input was not understood and ask the user to repeat.'
+      - name: listen
+    next_step: continue
+
+  - id: anxiety_flow
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message acknowledging the user''s anxiety and ask if they would like tips to manage it or to talk to someone.'
+      - name: listen
+    next_step: anxiety_options
+
+  - id: anxiety_options
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: tips
+              utterances:
+                - tips
+                - advice
+                - help
+                - suggestions
+              jump:
+                step_id: anxiety_tips
+
+            - name: talk_to_person
+              utterances:
+                - talk
+                - speak
+                - chat
+                - connect
+              jump:
+                step_id: connect_person
+
+            - name: back
+              utterances:
+                - back
+                - return
+                - main menu
+              jump:
+                step_id: start
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: anxiety_fallback
+    next_step: none
+
+  - id: anxiety_tips
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Provide a list of tips to manage anxiety.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Ask the user if they would like to discuss anything else or need further assistance.'
+      - name: listen
+    next_step: continue
+
+  - id: connect_person
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Inform the user that a professional will be connected to them shortly.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Notify the user that a professional has been notified and will reach out soon.'
+    next_step: quit
+
+  - id: anxiety_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a fallback message asking the user to specify if they need tips or someone to talk to.'
+      - name: listen
+    next_step: anxiety_options
+
+  - id: sad_flow
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message acknowledging the user''s sadness and ask if they would like to share more or get support.'
+      - name: listen
+    next_step: sad_options
+
+  - id: sad_options
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: share_more
+              utterances:
+                - share
+                - tell
+                - express
+                - explain
+              jump:
+                step_id: listen_more_sad
+
+            - name: get_support
+              utterances:
+                - support
+                - help
+                - assistance
+                - resources
+              jump:
+                step_id: sad_support
+
+            - name: back
+              utterances:
+                - back
+                - return
+                - main menu
+              jump:
+                step_id: start
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: sad_fallback
+    next_step: none
+
+  - id: listen_more_sad
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message encouraging the user to share more about what''s on their mind.'
+      - name: listen
+    next_step: sad_options
+
+  - id: sad_support
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Provide a list of support resources for someone feeling sad.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Ask the user if they would like to discuss anything else or need further assistance.'
+      - name: listen
+    next_step: continue
+
+  - id: sad_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a fallback message asking the user to specify if they want to share more or need support.'
+      - name: listen
+    next_step: sad_options
+
+  - id: happy_flow
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message acknowledging the user''s happiness and ask if they would like to share more or do something to celebrate.'
+      - name: listen
+    next_step: happy_options
+
+  - id: happy_options
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: share_happy
+              utterances:
+                - share
+                - tell
+                - express
+                - explain
+              jump:
+                step_id: listen_more_happy
+
+            - name: celebrate
+              utterances:
+                - celebrate
+                - do something
+                - party
+                - enjoy
+              jump:
+                step_id: celebrate_happy
+
+            - name: back
+              utterances:
+                - back
+                - return
+                - main menu
+              jump:
+                step_id: start
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: happy_fallback
+    next_step: none
+
+  - id: listen_more_happy
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message encouraging the user to share more about what''s making them happy.'
+      - name: listen
+    next_step: happy_options
+
+  - id: celebrate_happy
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message offering the user options to hear a joke or some uplifting quotes to celebrate their happiness.'
+      - name: listen
+    next_step: celebrate_options
+
+  - id: celebrate_options
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: joke
+              utterances:
+                - joke
+                - hear a joke
+                - funny
+                - laugh
+              jump:
+                step_id: tell_joke
+
+            - name: quotes
+              utterances:
+                - quotes
+                - uplifting
+                - inspirational
+                - motivate
+              jump:
+                step_id: share_quotes
+
+            - name: back
+              utterances:
+                - back
+                - return
+                - main menu
+              jump:
+                step_id: happy_flow
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: celebrate_fallback
+    next_step: none
+
+  - id: tell_joke
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Tell a funny joke to the user.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Ask the user if there is anything else you can do for them.'
+      - name: listen
+    next_step: continue
+
+  - id: share_quotes
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Share a list of uplifting quotes with the user.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Ask the user if there is anything else you can assist with.'
+      - name: listen
+    next_step: continue
+
+  - id: celebrate_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a fallback message asking the user to specify if they would like to hear a joke or some uplifting quotes.'
+      - name: listen
+    next_step: celebrate_options
+
+  - id: anger_flow
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message acknowledging the user''s anger and ask if they would like to talk about what''s causing it or get strategies to manage it.'
+      - name: listen
+    next_step: anger_options
+
+  - id: anger_options
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: talk_about
+              utterances:
+                - talk
+                - discuss
+                - explain
+                - share
+              jump:
+                step_id: listen_more_anger
+
+            - name: manage_strategies
+              utterances:
+                - strategies
+                - manage
+                - tips
+                - techniques
+              jump:
+                step_id: anger_tips
+
+            - name: back
+              utterances:
+                - back
+                - return
+                - main menu
+              jump:
+                step_id: start
+
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+                - exit
+              jump:
+                step_id: quit
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: anger_fallback
+    next_step: none
+
+  - id: listen_more_anger
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a message encouraging the user to share more about what''s making them feel angry.'
+      - name: listen
+    next_step: anger_options
+
+  - id: anger_tips
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Provide a list of strategies to manage anger.'
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Ask the user if they would like to discuss anything else or need further assistance.'
+      - name: listen
+    next_step: continue
+
+  - id: anger_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a fallback message asking the user to specify if they would like to talk about what''s causing their anger or need strategies to manage it.'
+      - name: listen
+    next_step: anger_options
+
+  - id: quit
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a farewell message indicating that the conversation has ended.'

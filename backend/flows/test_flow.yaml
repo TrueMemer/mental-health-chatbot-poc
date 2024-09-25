@@ -1,0 +1,72 @@
+name: Test Flow
+id: test_flow
+classifier: basic
+utterances:
+  - test
+  - test2
+steps:
+  - id: start
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: 'Welcome! Please tell me what''s bothering you!'
+      - name: listen
+    next_step: continue
+  - id: continue
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: anxiety
+              utterances:
+                - anxiety
+              jump:
+                step_id: anxiety_flow
+            - name: sadness
+              utterances:
+                - feel sad
+                - sad
+              jump:
+                step_id: sad_flow
+            - name: quit
+              utterances:
+                - nevermind
+                - quit
+                - stop
+              jump:
+                step_id: quit
+            - name: fallback
+              default: true
+              jump:
+                step_id: start_fallback
+  - id: start_fallback
+    actions:
+      - name: send-message
+        params:
+          engine: text
+          content: 'Sorry, didn''t understand, can you repeat?'
+      - name: listen
+    next_step: continue
+
+  - id: anxiety_flow
+    actions:
+      - name: send-message
+        params:
+          engine: text
+          content: 'Anxiety flow started'
+
+  - id: sad_flow
+    actions:
+      - name: send-message
+        params:
+          engine: text
+          content: 'Sad flow started'
+
+  - id: quit
+    actions:
+      - name: send-message
+        params:
+          engine: text
+          content: 'Sorry, we can talk later about it!'
