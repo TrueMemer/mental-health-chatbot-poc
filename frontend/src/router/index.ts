@@ -4,17 +4,10 @@ import RegisterPage from '@/views/RegisterPage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import LandingPage from '@/views/LandingPage.vue';
 import GoogleAuthSuccess from '@/views/GoogleAuthSuccess.vue';
-import ConversationFlow from '@/views/ConversationFlow.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/conversation-flow/:userId/:flowId',
-      name: 'ConversationFlow',
-      component: ConversationFlow,
-      props: true,
-    },
     {
       path: '/',
       name: 'Landing',

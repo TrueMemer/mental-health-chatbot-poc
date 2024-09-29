@@ -4,7 +4,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": "./",
         "baseUrl": "./",
         "strict": true,
         "esModuleInterop": true,
@@ -12,6 +12,9 @@
         "paths": {
             "@/*": [
                 "src/*"
+            ],
+            "#/*": [
+                "lib/*"
             ]
         },
     },
@@ -21,12 +24,11 @@
         }
     },
     "exclude": [
-        "__tests__",
+        "lib/__tests__",
         "__mocks__",
         "scripts",
-        "src/services/legacy"
     ],
     "include": [
-        "./src/**/*",
+        "./src/**/*", "./lib/**/*", "lib/enums", "lib/interfaces", "lib/services",
     ],
 }

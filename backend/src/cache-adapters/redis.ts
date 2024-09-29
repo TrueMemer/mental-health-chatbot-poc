@@ -1,4 +1,4 @@
-import { CacheAdapter } from '@/interfaces/cache-adapter';
+import { CacheAdapter } from '#/interfaces/cache-adapter';
 import Redis, { RedisOptions } from 'ioredis';
 
 export class RedisCache implements CacheAdapter {

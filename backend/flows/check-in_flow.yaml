@@ -1,0 +1,26 @@
+name: Check-In Flow
+slug: check-in
+classifier: basic
+utterances:
+  - check-in
+
+steps:
+  - id: start
+    actions:
+      - name: send-message
+        params:
+          engine: 'ai'
+          prompt: 'Generate a welcoming message asking the user what''s their mood today.'
+      - name: listen
+    next_step: save-context
+
+  - id: save-context
+    actions:
+      - name: set-context
+        params:
+          key: lastCheckInMessage
+          value: "{{{ lastInput }}}"
+      - name: send-message
+        params:
+          engine: ai
+          prompt: "Generate a message that reflects user's mood judging by message: {{{ context.lastCheckInMessage }}}"

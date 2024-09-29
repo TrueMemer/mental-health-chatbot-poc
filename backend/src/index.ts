@@ -6,9 +6,12 @@ import http from 'http';
 import messagesRouter from './routes/messages';
 import authRouter from './routes/auth';
 import usersRouter from './routes/users';
+import checkInRouter from './routes/check-in'
+import telegramRouter from './routes/telegram'
 import passport from './config/passport';
 import auth from './middleware/auth';
-import { FlowMachine } from './services/flow-machine';
+import { FlowMachine } from '#/flow-machine';
+import { telegramAdapter } from './adapters/telegram';
 
 dotenv.config();
 
@@ -23,6 +26,7 @@ const systemPrompt = `You are a compassionate and empathetic virtual assistant d
 
 export const flowMachine = new FlowMachine();
 flowMachine.loadFlows()
+flowMachine.registerAdapter(telegramAdapter)
 flowMachine.setSystemPrompt(systemPrompt)
 
 const app: Application = express();
@@ -53,6 +57,8 @@ const router = express.Router();
 router.use('/messages', auth, messagesRouter);
 router.use('/users', auth, usersRouter);
 router.use('/auth', authRouter);
+router.use('/check-in', checkInRouter);
+router.use('/telegram', telegramRouter)
 
 app.use('/api', router);
 

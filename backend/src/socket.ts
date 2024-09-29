@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import { flowMachine, server } from './index'
 import prisma from './prisma';
 import jwt from 'jsonwebtoken';
-import { SocketAdapter } from './services/adapters/socket';
+import { SocketAdapter } from './adapters/socket';
 
 const io = new Server(server, {
     cors: {

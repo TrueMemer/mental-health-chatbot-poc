@@ -15,23 +15,6 @@ utterances:
   - worried
   - joyful
 
-middleware:
-  before_flow:
-    - name: log_start
-      params:
-        message: 'Starting Mood Flow for user.'
-  before_step:
-    - name: authenticate_user
-      params:
-        role: 'user'
-    - name: log_step
-      params:
-        message: 'About to execute step.'
-  after_step:
-    - name: log_step_completion
-      params:
-        message: 'Step completed successfully.'
-
 steps:
   - id: start
     actions:

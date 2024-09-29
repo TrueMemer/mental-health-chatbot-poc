@@ -1,4 +1,4 @@
-import { CacheAdapter } from "@/interfaces/cache-adapter";
+import { CacheAdapter } from "#/interfaces/cache-adapter";
 
 interface CacheEntry<T> {
     value: T;

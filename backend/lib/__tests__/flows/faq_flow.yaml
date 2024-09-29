@@ -1,0 +1,57 @@
+name: FAQ Flow
+slug: faq_flow
+classifier: basic
+utterances:
+  - help
+  - shipping
+  - returns
+  - payments
+steps:
+  - id: start
+    actions:
+      - name: send-message
+        params:
+          engine: "text"
+          content: "Welcome! How can I assist you today?"
+      - name: listen
+    next_step: classify_faq
+  - id: classify_faq
+    actions:
+      - name: classify
+        params:
+          engine: basic
+          branches:
+            - name: shipping
+              utterances:
+                - shipping
+                - delivery
+              jump:
+                step_id: shipping_info
+            - name: returns
+              utterances:
+                - return
+                - returns
+              jump:
+                step_id: returns_info
+            - name: fallback
+              default: true
+              jump:
+                step_id: fallback
+  - id: shipping_info
+    actions:
+      - name: send-message
+        params:
+          engine: "text"
+          content: "Our shipping options include Standard (5-7 business days) and Expedited (2-3 business days). Shipping costs are calculated based on your location and order size at checkout."
+  - id: returns_info
+    actions:
+      - name: send-message
+        params:
+          engine: "text"
+          content: "You can return items within 30 days of receipt for a full refund or exchange. Please visit our Returns Center to initiate a return."
+  - id: fallback
+    actions:
+      - name: send-message
+        params:
+          engine: "text"
+          content: "I'm sorry, I didn't understand that. Could you please specify if you need help with Shipping, Returns, or Payments?"

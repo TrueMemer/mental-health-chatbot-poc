@@ -1,0 +1,118 @@
+name: FAQ Flow
+id: faq_flow
+classifier: basic
+utterances:
+  - shipping
+  - delivery
+  - return
+  - refund
+  - payment
+  - order
+  - track
+  - support
+  - help
+  - contact
+  - policy
+  - cancel
+
+steps:
+  - id: start
+    actions:
+      - name: classify
+        params:
+          engine: ai
+          branches:
+            - name: shipping
+              utterances:
+                - shipping
+                - delivery
+                - how do I get my order
+                - shipping costs
+                - delivery time
+              jump:
+                step_id: shipping_info
+
+            - name: returns
+              utterances:
+                - return
+                - returns
+                - how to return
+                - return policy
+                - exchange
+              jump:
+                step_id: returns_info
+
+            - name: payments
+              utterances:
+                - payment
+                - payments
+                - payment methods
+                - credit card
+                - billing
+              jump:
+                step_id: payments_info
+
+            - name: orders
+              utterances:
+                - order
+                - orders
+                - track my order
+                - order status
+                - cancel order
+              jump:
+                step_id: orders_info
+
+            - name: support
+              utterances:
+                - support
+                - help
+                - assistance
+                - customer service
+                - contact
+              jump:
+                step_id: support_info
+
+            - name: fallback
+              default: true
+              jump:
+                step_id: end
+
+  - id: shipping_info
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: "Our shipping options include Standard (5-7 business days) and Expedited (2-3 business days). Shipping costs are calculated based on your location and order size at checkout."
+
+  - id: returns_info
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: "You can return items within 30 days of receipt for a full refund or exchange. Please visit our Returns Center to initiate a return."
+
+  - id: payments_info
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: "We accept various payment methods including credit/debit cards, PayPal, and Apple Pay. All transactions are secure and encrypted."
+
+  - id: orders_info
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: "To track your order, please use the 'Track Order' feature on our website and enter your order number. If you need to cancel an order, contact our support team within 24 hours of placing it."
+
+  - id: support_info
+    actions:
+      - name: send-message
+        params:
+          engine: 'text'
+          content: "For further assistance, please contact our customer support at support@clareandme.com or call us at (123) 456-7890."
+
+
+  - id: end
+    actions:
+      - name: no-op

@@ -1,4 +1,4 @@
-import { FlowAdapter } from "../flow-machine";
+import { FlowAdapter } from "#/interfaces/flow";
 
 export class ConsoleAdapter implements FlowAdapter {
     name = "console";
